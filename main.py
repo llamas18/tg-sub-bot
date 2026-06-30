@@ -31,11 +31,28 @@ async def handle_callback(callback: types.CallbackQuery):
     await callback.answer()
 
     if callback.data == "sub_7":
-        await callback.message.answer("7 days selected.")
+        await callback.message.answer(
+            "💎 You chose 7 days access.\n\n"
+            "🔓 Access granted (test mode)\n\n"
+            "👉 Here is your content:"
+        )
+        await callback.message.answer("🔥 SECRET CONTENT 7 DAYS")
+
     elif callback.data == "sub_30":
-        await callback.message.answer("30 days selected.")
+        await callback.message.answer(
+            "💰 You chose 30 days access.\n\n"
+            "🔓 Access granted (test mode)\n\n"
+            "👉 Here is your content:"
+        )
+        await callback.message.answer("🔥 SECRET CONTENT 30 DAYS")
+
     elif callback.data == "sub_life":
-        await callback.message.answer("Lifetime selected.")
+        await callback.message.answer(
+            "🔥 Lifetime access activated.\n\n"
+            "👑 You now have FULL access\n\n"
+            "👉 Here is your content:"
+        )
+        await callback.message.answer("🔥 SECRET VIP CONTENT")
 
 async def main():
     await dp.start_polling(bot)
