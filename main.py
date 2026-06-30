@@ -1,3 +1,4 @@
+await message.answer("🔥 NEW VERSION LOADED 🔥")
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
