@@ -31,28 +31,54 @@ async def handle_callback(callback: types.CallbackQuery):
     await callback.answer()
 
     if callback.data == "sub_7":
-        await callback.message.answer(
-            "💎 You chose 7 days access.\n\n"
-            "🔓 Access granted (test mode)\n\n"
-            "👉 Here is your content:"
-        )
+    await callback.message.answer(
+        "💎 7 days access\n\n"
+        "💳 Price: $9\n\n"
+        "👉 Send USDT (TRC20) to this address:\n"
+        "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
+        "После оплаты нажми кнопку ниже 👇",
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ I paid", callback_data="paid_7")]
+        ])
+    )
         await callback.message.answer("🔥 SECRET CONTENT 7 DAYS")
 
     elif callback.data == "sub_30":
-        await callback.message.answer(
-            "💰 You chose 30 days access.\n\n"
-            "🔓 Access granted (test mode)\n\n"
-            "👉 Here is your content:"
-        )
+    await callback.message.answer(
+        "💰 30 days access\n\n"
+        "💳 Price: $25\n\n"
+        "👉 Send USDT (TRC20) to this address:\n"
+        "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
+        "После оплаты нажми кнопку ниже 👇",
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ I paid", callback_data="paid_30")]
+        ])
+    )
         await callback.message.answer("🔥 SECRET CONTENT 30 DAYS")
 
     elif callback.data == "sub_life":
-        await callback.message.answer(
-            "🔥 Lifetime access activated.\n\n"
-            "👑 You now have FULL access\n\n"
-            "👉 Here is your content:"
-        )
+    await callback.message.answer(
+        "🔥 Lifetime access\n\n"
+        "💳 Price: $79\n\n"
+        "👉 Send USDT (TRC20) to this address:\n"
+        "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
+        "После оплаты нажми кнопку ниже 👇",
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ I paid", callback_data="paid_life")]
+        ])
+    )
         await callback.message.answer("🔥 SECRET VIP CONTENT")
+
+    elif callback.data.startswith("paid_"):
+    await callback.message.answer("⏳ Payment check in progress...")
+
+    await bot.send_message(
+        chat_id=7473201935,
+        text=f"💸 New payment request!\n\nUser: @{callback.from_user.username}\nID: {callback.from_user.id}\nTariff: {callback.data}"
+    )
 
 async def main():
     await dp.start_polling(bot)
