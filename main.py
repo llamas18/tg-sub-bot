@@ -2,7 +2,7 @@ import asyncio
 import os
 from datetime import datetime, timedelta
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 from dotenv import load_dotenv
@@ -15,7 +15,15 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 ADMIN_ID = 7473201935
-GROUP_ID = -1001234567890  # ВСТАВЬ ID ГРУППЫ (НЕ ССЫЛКУ!)
+GROUP_ID = -1001234567890  # потом вставишь реальный
+
+
+# ---------- DEBUG (ЛОВИТ ВСЁ) ----------
+
+@dp.message()
+async def debug_all(message: types.Message):
+    print("DEBUG CHAT ID:", message.chat.id)
+    await message.answer(f"WORKS: {message.chat.id}")
 
 
 # ---------- KEYBOARDS ----------
@@ -62,14 +70,12 @@ async def handle_callback(callback: types.CallbackQuery):
 
     data = callback.data
 
-    # ===== BACK =====
     if data == "back":
         await callback.message.edit_text(
             "Welcome.\n\nChoose your access:",
             reply_markup=get_tariffs()
         )
 
-    # ===== TARIFFS =====
     elif data.startswith("sub_"):
         tariff = data.split("_")[1]
 
@@ -82,7 +88,6 @@ async def handle_callback(callback: types.CallbackQuery):
             reply_markup=get_payment_kb(tariff)
         )
 
-    # ===== USER CLICKED "I PAID" =====
     elif data.startswith("paid_"):
         user = callback.from_user
         tariff = data.split("_")[1]
@@ -104,12 +109,10 @@ async def handle_callback(callback: types.CallbackQuery):
             reply_markup=get_admin_kb(user.id, tariff)
         )
 
-    # ===== ADMIN APPROVE =====
     elif data.startswith("approve_"):
         _, user_id, tariff = data.split("_")
         user_id = int(user_id)
 
-        # создаём одноразовую ссылку (1 человек, 10 минут)
         expire_time = datetime.utcnow() + timedelta(minutes=10)
 
         invite = await bot.create_chat_invite_link(
@@ -118,7 +121,6 @@ async def handle_callback(callback: types.CallbackQuery):
             expire_date=expire_time
         )
 
-        # отправляем пользователю
         await bot.send_message(
             chat_id=user_id,
             text=(
@@ -132,11 +134,6 @@ async def handle_callback(callback: types.CallbackQuery):
         )
 
         await callback.message.edit_text("✅ Approved")
-from aiogram import F
-
-@dp.message(F.chat.type.in_(["group", "supergroup"]))
-async def get_chat_id(message: types.Message):
-    await message.answer(f"ID: {message.chat.id}")
 
 
 # ---------- MAIN ----------
@@ -147,4 +144,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
