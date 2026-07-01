@@ -145,6 +145,10 @@ if __name__ == "__main__":
     asyncio.run(main())
     from aiogram import types
 
-@dp.message()
+from aiogram import F
+
+@dp.message(F.chat.type.in_(["group", "supergroup"]))
 async def get_chat_id(message: types.Message):
-    print("CHAT ID:", message.chat.id)
+    @dp.message(F.chat.type.in_(["group", "supergroup"]))
+async def get_chat_id(message: types.Message):
+    await message.answer(f"ID: {message.chat.id}")
