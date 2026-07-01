@@ -57,6 +57,89 @@ async def start(message: types.Message):
 async def handle_callback(callback: types.CallbackQuery):
     await callback.answer()
 
+    # ===== НАЗАД =====
+    if callback.data == "back":
+        await callback.message.edit_text(
+            "Welcome.\n\nChoose your access:",
+            reply_markup=get_tariffs()
+        )
+
+    # ===== 7 DAYS =====
+    elif callback.data == "sub_7":
+        await callback.message.edit_text(
+            "💎 7 days access\n\n"
+            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "После оплаты нажми 👇",
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="✅ I paid", callback_data="paid_7")],
+                [InlineKeyboardButton(text="⬅️ Back", callback_data="back")]
+            ])
+        )
+
+    # ===== 30 DAYS =====
+    elif callback.data == "sub_30":
+        await callback.message.edit_text(
+            "💰 30 days access\n\n"
+            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "После оплаты нажми 👇",
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="✅ I paid", callback_data="paid_30")],
+                [InlineKeyboardButton(text="⬅️ Back", callback_data="back")]
+            ])
+        )
+
+    # ===== LIFETIME =====
+    elif callback.data == "sub_life":
+        await callback.message.edit_text(
+            "🔥 Lifetime access\n\n"
+            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "После оплаты нажми 👇",
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="✅ I paid", callback_data="paid_life")],
+                [InlineKeyboardButton(text="⬅️ Back", callback_data="back")]
+            ])
+        )
+
+    # ===== ПОЛЬЗОВАТЕЛЬ НАЖАЛ "I PAID" =====
+    elif callback.data.startswith("paid_"):
+        user_id = callback.from_user.id
+        plan = callback.data.split("_")[1]
+
+        # сообщение тебе
+        await bot.send_message(
+            chat_id=ТВОЙ_ID,
+            text=f"💰 Новый платеж!\n\nUser: {user_id}\nPlan: {plan}",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(
+                    text="✅ Approve",
+                    callback_data=f"approve_{user_id}_{plan}"
+                )]
+            ])
+        )
+
+        await callback.message.answer("⏳ Payment checking...")
+
+    # ===== ТЫ НАЖАЛ APPROVE =====
+    elif callback.data.startswith("approve_"):
+        _, user_id, plan = callback.data.split("_")
+        user_id = int(user_id)
+
+        invite_link = "https://t.me/ТВОЙ_КАНАЛ"
+
+        # отправляем пользователю доступ
+        await bot.send_message(
+            chat_id=user_id,
+            text=f"✅ Payment confirmed!\n\n🔓 Access: {plan}\n👉 {invite_link}"
+        )
+
+        # тебе подтверждение
+        await callback.message.answer("✅ User approved")
+
+        await callback.answer("Approved!")
+
     # ---------- TARIFFS ----------
     if callback.data == "sub_7":
         await callback.message.answer(
