@@ -68,7 +68,7 @@ async def handle_callback(callback: types.CallbackQuery):
     elif callback.data == "sub_7":
         await callback.message.edit_text(
             "💎 7 days access\n\n"
-            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "💳 Send USDT to:\n`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
             "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -81,7 +81,7 @@ async def handle_callback(callback: types.CallbackQuery):
     elif callback.data == "sub_30":
         await callback.message.edit_text(
             "💰 30 days access\n\n"
-            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "💳 Send USDT to:\n`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
             "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -94,7 +94,7 @@ async def handle_callback(callback: types.CallbackQuery):
     elif callback.data == "sub_life":
         await callback.message.edit_text(
             "🔥 Lifetime access\n\n"
-            "💳 Send USDT to:\n`YOUR_WALLET`\n\n"
+            "💳 Send USDT to:\n`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
             "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -127,11 +127,11 @@ async def handle_callback(callback: types.CallbackQuery):
         _, user_id, plan = callback.data.split("_")
         user_id = int(user_id)
 
-        invite_link = "https://t.me/ТВОЙ_КАНАЛ"
+        invite_link = "https://t.me/+5GdBI6-BU9c5ZDcy"
 
         # отправляем пользователю доступ
         await bot.send_message(
-            chat_id=user_id,
+            chat_id=7473201935,
             text=f"✅ Payment confirmed!\n\n🔓 Access: {plan}\n👉 {invite_link}"
         )
 
