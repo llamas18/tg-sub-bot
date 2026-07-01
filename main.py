@@ -132,7 +132,11 @@ async def handle_callback(callback: types.CallbackQuery):
         )
 
         await callback.message.edit_text("✅ Approved")
+from aiogram import F
 
+@dp.message(F.chat.type.in_(["group", "supergroup"]))
+async def get_chat_id(message: types.Message):
+    await message.answer(f"ID: {message.chat.id}")
 
 
 # ---------- MAIN ----------
@@ -143,12 +147,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    from aiogram import types
-
-from aiogram import F
-
-@dp.message(F.chat.type.in_(["group", "supergroup"]))
-async def get_chat_id(message: types.Message):
-    @dp.message(F.chat.type.in_(["group", "supergroup"]))
-async def get_chat_id(message: types.Message):
-    await message.answer(f"ID: {message.chat.id}")
+    
