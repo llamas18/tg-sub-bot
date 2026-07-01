@@ -2,7 +2,7 @@ import asyncio
 import os
 from datetime import datetime, timedelta
 
-from aiogram import Bot, Dispatcher, types, F
+from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 from dotenv import load_dotenv
@@ -15,24 +15,16 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 ADMIN_ID = 7473201935
-GROUP_ID = -1001234567890  # потом вставишь реальный
-
-
-# ---------- DEBUG (ЛОВИТ ВСЁ) ----------
-
-@dp.message()
-async def debug_all(message: types.Message):
-    print("DEBUG CHAT ID:", message.chat.id)
-    await message.answer(f"WORKS: {message.chat.id}")
+GROUP_ID = -7473201935  # ВСТАВЬ РЕАЛЬНЫЙ ID
 
 
 # ---------- KEYBOARDS ----------
 
 def get_tariffs():
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💎 7 days - $9", callback_data="sub_7")],
-        [InlineKeyboardButton(text="💰 30 days - $25", callback_data="sub_30")],
-        [InlineKeyboardButton(text="🔥 Lifetime - $79", callback_data="sub_life")],
+        [InlineKeyboardButton(text="💎 7 days — $9", callback_data="sub_7")],
+        [InlineKeyboardButton(text="💰 30 days — $25", callback_data="sub_30")],
+        [InlineKeyboardButton(text="🔥 Lifetime — $79", callback_data="sub_life")],
     ])
 
 
@@ -70,12 +62,14 @@ async def handle_callback(callback: types.CallbackQuery):
 
     data = callback.data
 
+    # BACK
     if data == "back":
         await callback.message.edit_text(
             "Welcome.\n\nChoose your access:",
             reply_markup=get_tariffs()
         )
 
+    # TARIFF SELECT
     elif data.startswith("sub_"):
         tariff = data.split("_")[1]
 
@@ -88,6 +82,7 @@ async def handle_callback(callback: types.CallbackQuery):
             reply_markup=get_payment_kb(tariff)
         )
 
+    # USER PAID
     elif data.startswith("paid_"):
         user = callback.from_user
         tariff = data.split("_")[1]
@@ -109,6 +104,7 @@ async def handle_callback(callback: types.CallbackQuery):
             reply_markup=get_admin_kb(user.id, tariff)
         )
 
+    # ADMIN APPROVE
     elif data.startswith("approve_"):
         _, user_id, tariff = data.split("_")
         user_id = int(user_id)
@@ -135,6 +131,10 @@ async def handle_callback(callback: types.CallbackQuery):
 
         await callback.message.edit_text("✅ Approved")
 
+@dp.message()
+async def debug(message: types.Message):
+    print(message.chat.id)
+    await message.answer(str(message.chat.id))
 
 # ---------- MAIN ----------
 
