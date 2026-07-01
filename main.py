@@ -115,6 +115,7 @@ async def handle_callback(callback: types.CallbackQuery):
     "⏳ Payment sent for review.\n\n"
     "⏱ Обычно занимает 1–10 минут."
 )
+        await bot.send_message(user_id, "🔓 Access granted!\n\n👉 Join here: https://t.me/https://t.me/+5GdBI6-BU9c5ZDcy")
 
 
 # ---------- MAIN ----------
