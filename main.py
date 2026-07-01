@@ -133,8 +133,8 @@ async def handle_callback(callback: types.CallbackQuery):
 
 @dp.message()
 async def debug(message: types.Message):
-    print(message.chat.id)
-    await message.answer(str(message.chat.id))
+    print("GOT MESSAGE:", message.text)
+    await message.answer("OK")
 
 # ---------- MAIN ----------
 
