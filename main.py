@@ -15,7 +15,7 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 ADMIN_ID = 7473201935
-GROUP_ID = -100XXXXXXXXXX  # ВСТАВЬ ID ГРУППЫ (НЕ ССЫЛКУ!)
+GROUP_ID = -1001234567890  # ВСТАВЬ ID ГРУППЫ (НЕ ССЫЛКУ!)
 
 
 # ---------- KEYBOARDS ----------
