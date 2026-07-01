@@ -12,6 +12,9 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+ADMIN_ID = 7473201935  # твой ID
+GROUP_LINK = "https://t.me/your_private_group"  # ВСТАВЬ СВОЮ ССЫЛКУ
+
 
 # ---------- KEYBOARDS ----------
 
@@ -23,16 +26,18 @@ def get_tariffs():
     ])
 
 
-def get_back_button():
+def get_paid_button(tariff):
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="back")]
+        [InlineKeyboardButton(text="✅ I paid", callback_data=f"paid_{tariff}")]
     ])
 
 
-def get_paid_button(tariff):
+def get_admin_approve(user_id, tariff):
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ I paid", callback_data=f"paid_{tariff}")],
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="back")]
+        [InlineKeyboardButton(
+            text="✅ Approve",
+            callback_data=f"approve_{user_id}_{tariff}"
+        )]
     ])
 
 
@@ -46,76 +51,81 @@ async def start(message: types.Message):
     )
 
 
-# ---------- CALLBACK HANDLER ----------
+# ---------- CALLBACK ----------
 
 @dp.callback_query()
 async def handle_callback(callback: types.CallbackQuery):
     await callback.answer()
 
-    # ---------- BACK ----------
-    if callback.data == "back":
-        await callback.message.edit_text(
-            "Welcome.\n\nChoose your access:",
-            reply_markup=get_tariffs()
-        )
-
-    # ---------- 7 DAYS ----------
-    elif callback.data == "sub_7":
-        await callback.message.edit_text(
+    # ---------- TARIFFS ----------
+    if callback.data == "sub_7":
+        await callback.message.answer(
             "💎 7 days access\n\n"
             "💳 Price: $9\n\n"
-            "👉 Send USDT (TRC20) to this address:\n"
+            "👉 Send USDT (TRC20):\n"
             "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми кнопку ниже 👇",
+            "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=get_paid_button("7")
         )
 
-    # ---------- 30 DAYS ----------
     elif callback.data == "sub_30":
-        await callback.message.edit_text(
+        await callback.message.answer(
             "💰 30 days access\n\n"
             "💳 Price: $25\n\n"
-            "👉 Send USDT (TRC20) to this address:\n"
+            "👉 Send USDT (TRC20):\n"
             "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми кнопку ниже 👇",
+            "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=get_paid_button("30")
         )
 
-    # ---------- LIFETIME ----------
     elif callback.data == "sub_life":
-        await callback.message.edit_text(
+        await callback.message.answer(
             "🔥 Lifetime access\n\n"
             "💳 Price: $79\n\n"
-            "👉 Send USDT (TRC20) to this address:\n"
+            "👉 Send USDT (TRC20):\n"
             "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми кнопку ниже 👇",
+            "После оплаты нажми 👇",
             parse_mode="Markdown",
             reply_markup=get_paid_button("life")
         )
 
-    # ---------- PAYMENT ----------
+    # ---------- USER CLICKED "I PAID" ----------
     elif callback.data.startswith("paid_"):
         tariff = callback.data.split("_")[1]
 
-        await callback.message.edit_text("⏳ Payment check in progress...")
+        await callback.message.answer(
+            "⏳ Payment sent for review.\n\n"
+            "Ожидайте подтверждения."
+        )
 
         await bot.send_message(
-            chat_id=7473201935,
+            chat_id=ADMIN_ID,
             text=(
                 "💸 New payment request!\n\n"
                 f"User: @{callback.from_user.username}\n"
                 f"ID: {callback.from_user.id}\n"
                 f"Tariff: {tariff}"
-            )
+            ),
+            reply_markup=get_admin_approve(callback.from_user.id, tariff)
         )
 
-        await callback.message.answer(
-    "⏳ Payment sent for review.\n\n"
-    "⏱ Обычно занимает 1–10 минут."
-)
-        await bot.send_message(user_id, "🔓 Access granted!\n\n👉 Join here: https://t.me/https://t.me/+5GdBI6-BU9c5ZDcy")
+    # ---------- ADMIN APPROVES ----------
+    elif callback.data.startswith("approve_"):
+        _, user_id, tariff = callback.data.split("_")
+        user_id = int(user_id)
+
+        # сообщение пользователю
+        await bot.send_message(
+            user_id,
+            f"✅ Payment confirmed!\n\n"
+            f"🔓 Your access: {tariff}\n\n"
+            f"👉 Join here:\n{GROUP_LINK}"
+        )
+
+        # сообщение админу
+        await callback.message.edit_text("✅ User approved and got access")
 
 
 # ---------- MAIN ----------
