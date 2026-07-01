@@ -7,6 +7,9 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
+@dp.message()
+async def get_id(message: types.Message):
+    print(message.chat.id)
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
