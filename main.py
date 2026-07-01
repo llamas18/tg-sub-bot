@@ -111,14 +111,10 @@ async def handle_callback(callback: types.CallbackQuery):
             )
         )
 
-        await asyncio.sleep(2)
-
         await callback.message.answer(
-            "✅ Payment received (test mode)\n\n"
-            "🔓 Access granted\n\n"
-            "👉 Here is your content:\n\n"
-            "🔥 SECRET CONTENT"
-        )
+    "⏳ Payment sent for review.\n\n"
+    "⏱ Обычно занимает 1–10 минут."
+)
 
 
 # ---------- MAIN ----------
