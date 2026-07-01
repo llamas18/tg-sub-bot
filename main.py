@@ -1,5 +1,7 @@
 import asyncio
 import os
+from datetime import datetime, timedelta
+
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
@@ -13,7 +15,7 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 ADMIN_ID = 7473201935
-GROUP_LINK = "https://t.me/+5GdBI6-BU9c5ZDcy"
+GROUP_ID = -100XXXXXXXXXX  # ВСТАВЬ ID ГРУППЫ (НЕ ССЫЛКУ!)
 
 
 # ---------- KEYBOARDS ----------
@@ -68,54 +70,38 @@ async def handle_callback(callback: types.CallbackQuery):
         )
 
     # ===== TARIFFS =====
-    elif data == "sub_7":
-        await callback.message.edit_text(
-            "💎 7 days access\n\n"
-            "💳 Send USDT (TRC20):\n"
-            "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми 👇",
-            parse_mode="Markdown",
-            reply_markup=get_payment_kb("7")
-        )
+    elif data.startswith("sub_"):
+        tariff = data.split("_")[1]
 
-    elif data == "sub_30":
         await callback.message.edit_text(
-            "💰 30 days access\n\n"
+            f"Access: {tariff} days\n\n"
             "💳 Send USDT (TRC20):\n"
             "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми 👇",
+            "After payment click below 👇",
             parse_mode="Markdown",
-            reply_markup=get_payment_kb("30")
-        )
-
-    elif data == "sub_life":
-        await callback.message.edit_text(
-            "🔥 Lifetime access\n\n"
-            "💳 Send USDT (TRC20):\n"
-            "`TBSQpcg8mpU9JxFwQy2pydiciGgTERfCSX`\n\n"
-            "После оплаты нажми 👇",
-            parse_mode="Markdown",
-            reply_markup=get_payment_kb("life")
+            reply_markup=get_payment_kb(tariff)
         )
 
     # ===== USER CLICKED "I PAID" =====
     elif data.startswith("paid_"):
-        user_id = callback.from_user.id
+        user = callback.from_user
         tariff = data.split("_")[1]
 
+        username = f"@{user.username}" if user.username else "No username"
+
         await callback.message.answer(
-            "⏳ Payment sent for review.\n\n"
-            "Ожидайте подтверждения."
+            "⏳ Payment is being reviewed.\n\nPlease wait for approval."
         )
 
         await bot.send_message(
             chat_id=ADMIN_ID,
             text=(
-                "💸 New payment request!\n\n"
-                f"User ID: {user_id}\n"
-                f"Tariff: {tariff}"
+                "💸 New payment request\n\n"
+                f"👤 User: {username}\n"
+                f"🆔 ID: {user.id}\n"
+                f"📦 Tariff: {tariff}"
             ),
-            reply_markup=get_admin_kb(user_id, tariff)
+            reply_markup=get_admin_kb(user.id, tariff)
         )
 
     # ===== ADMIN APPROVE =====
@@ -123,16 +109,29 @@ async def handle_callback(callback: types.CallbackQuery):
         _, user_id, tariff = data.split("_")
         user_id = int(user_id)
 
+        # создаём одноразовую ссылку (1 человек, 10 минут)
+        expire_time = datetime.utcnow() + timedelta(minutes=10)
+
+        invite = await bot.create_chat_invite_link(
+            chat_id=GROUP_ID,
+            member_limit=1,
+            expire_date=expire_time
+        )
+
+        # отправляем пользователю
         await bot.send_message(
             chat_id=user_id,
             text=(
                 "✅ Payment confirmed!\n\n"
                 f"🔓 Access: {tariff}\n\n"
-                f"👉 Join:\n{GROUP_LINK}"
-            )
+                "❤️ Tap to join:"
+            ),
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="❤️ Join", url=invite.invite_link)]
+            ])
         )
 
-        await callback.message.edit_text("✅ Approved and sent")
+        await callback.message.edit_text("✅ Approved")
 
 
 
