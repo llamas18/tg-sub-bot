@@ -121,7 +121,7 @@ async def handle_callback(callback: types.CallbackQuery):
             user_id,
             f"✅ Payment confirmed!\n\n"
             f"🔓 Your access: {tariff}\n\n"
-            f"👉 Join here:\n{GROUP_LINK}"
+            f"👉 Join here:\n{https://t.me/+5GdBI6-BU9c5ZDcy}"
         )
 
         # сообщение админу
